@@ -17,6 +17,7 @@ Las variables son:
 	3. Diferencia de días entre ambas tareas **(int)**
 	4. Objeto traído de la clase PrettyTable, que nos permita mostrar tablas para ordenar los datos de forma gráfica en la consola 
 	5. Id, que el programa usara trabajará como un iterador **(int)**
+	6. Elección del usuario, será del tipo **char**, podrá tomar los valores de 'a', 'b', 'd' o 's'. Nos servirá para controlar las acciones del programa.
 	 
 #### Procedimientos
 Si presiona "a", le pedirá que ingrese la descripción de la tarea y la fecha límite. El programa por su cuenta guardará la fecha en que fue creada la tarea y le asignará un identificador numérico. Con la fecha límite, el programa mostrará los días restantes que el usuario tiene para completar la tarea.
