@@ -4,15 +4,19 @@ from datetime import datetime
 from openpyxl import Workbook, load_workbook
 from logo import logo
 
-print(logo)
-
-
 wb = load_workbook('C:/Users/Givrain/OneDrive/Escritorio/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
 ws = wb.active
-
 tarea = Tarea(1,'', '')
-
 tabla_tarea = PrettyTable(['Id. de Tarea', 'Título', 'Fecha de creación', 'Fecha límite', 'Completada'])
+    
+def actualizar_tabla():
+
+    tabla_tarea.clear_rows()
+    for data in ws.iter_rows():
+        
+        tabla_tarea.add_row([data[0].value, data[1].value, data[2].value, data[3].value, data[4].value])
+
+    print(tabla_tarea)
 
 def diferencia_dias(fecha_limite, fecha_creacion):
 
@@ -39,24 +43,49 @@ def agregar_tarea():
     ws.append((tarea.id, tarea.titulo, tarea.fecha_creacion, tarea.fecha_limite, tarea.completado))
     wb.save('C:/Users/Givrain/OneDrive/Escritorio/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
 
+def eliminar_fila(id):
+    for fila in ws.iter_rows(min_row=1, max_col=1):
+        for celda in fila:
+            if celda.value == id:
+                ws.delete_rows(celda.row)
+                return True
     
     
-   
 
+def editar_fila():
+    pass
 
 print(logo)
-print(tabla_tarea)
+actualizar_tabla()
 print('')
 
-respuesta_usuario = input('¿Qué desea hacer? a: agregar tarea b: eliminar c: editar s: salir ')
 
-while respuesta_usuario != 's':
+seguir_ejecutando = True
+
+while seguir_ejecutando:
+
+    respuesta_usuario = input('¿Qué desea hacer? a: agregar tarea b: eliminar c: editar s: salir: ')
 
     if respuesta_usuario == 'a':
         agregar_tarea()
+    elif respuesta_usuario == 'b':
+        dato_eliminar = int(input("Ingrese el Id. de la tarea a eliminar: "))
 
-    respuesta_usuario = input('¿Qué desea hacer? a: agregar tarea b: eliminar c: editar s: salir')
-    
+        if eliminar_fila(dato_eliminar):
+            print("Celda eliminada exitosamente.")
+ 
+
+    elif respuesta_usuario == 'c':
+        editar_fila()
+    elif respuesta_usuario == 's':
+        seguir_ejecutando = False
+    else:
+        print("Seleccione una opción válida.")
+
+    actualizar_tabla()
+
+wb.close()
+
 print('Gracias por usar el programa!')
 
 
