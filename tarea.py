@@ -4,4 +4,4 @@ class Tarea:
         self.titulo = titulo
         self.fecha_creacion = fecha_creacion
         self.fecha_limite = fecha_limite
-        self.completado = False
+        self.completado = "❌"
