@@ -3,6 +3,7 @@ from tarea import Tarea
 from datetime import datetime
 from openpyxl import load_workbook
 from logo import logo
+from matplotlib import pyplot as plt
 
 wb = load_workbook('C:/Users/Givrain/OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey/Desktop/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
 ws = wb.active
@@ -12,7 +13,7 @@ tabla_tarea = PrettyTable(['Id. de Tarea', 'Título', 'Fecha de creación', 'Fec
 def actualizar_tabla():
      
      actualizar_identificadores()
-     
+      
      tabla_tarea.clear_rows()
      for data in ws.iter_rows():
         tabla_tarea.add_row([data[0].value, data[1].value, data[2].value, data[3].value, data[4].value])
@@ -33,7 +34,6 @@ def ingrese_fecha_limite():
     mes_limite = int(input("Ingrese el mes de la fecha límite: "))
     anio_limite =  int(input("Ingrese el año de la fecha límite: "))
     return datetime(anio_limite, mes_limite, dia_limite)
-
 
 def diferencia_dias(fecha_limite, fecha_creacion):
 
@@ -74,7 +74,7 @@ def editar_fila(id, editar_titulo, editar_fecha, completada):
         if editar_titulo == 's':
             fila[1].value = input("Ingrese el titulo de la tarea: ")
         if editar_fecha == 's':
-            fila[3].value = ingrese_fecha_limite()
+            fila[3].value = ingrese_fecha_limite().strftime("%d-%m-%Y")
         if completada == 's':
             fila[4].value = '✅'
         else:
@@ -83,7 +83,31 @@ def editar_fila(id, editar_titulo, editar_fecha, completada):
         wb.save('C:/Users/Givrain/OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey/Desktop/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
     else:
         print("Ingrese un identificador valido.")
+
+def mostrar_estadistica():
     
+    etiquetas = ["Tareas completadas", "Tareas No completadas"]
+    tareas_totales = ws.max_row
+    tareas_completadas = 0
+
+    for fila in ws.iter_rows(min_row=1, min_col=5, max_col=5):
+        for celda in fila:
+            if celda.value == '✅':
+                tareas_completadas+=1
+
+    tareas_faltantes = tareas_totales-tareas_completadas
+
+    tareas_completadas/=tareas_totales*100
+    tareas_faltantes/=tareas_totales*100
+    valores = [tareas_completadas, tareas_faltantes]
+    exp = (0.1,0.1)
+    ax1 = plt.subplots()
+    ax1.pie(valores, explode=exp, labels=etiquetas, autopct='%1.1f%%', shadow=True, startangle=90)
+
+    ax1.axis('equal')
+    plt.title("Estadísticas de tareas")
+    plt.legend()
+    plt.show()
 
 print(logo)
 actualizar_tabla()
@@ -93,7 +117,7 @@ seguir_ejecutando = True
 
 while seguir_ejecutando:
 
-    respuesta_usuario = input('¿Qué desea hacer? a: agregar tarea | b: eliminar | c: editar | s: salir: ')
+    respuesta_usuario = input('¿Qué desea hacer? a: Agregar tarea | b: Eliminar | c: Editar | e: Mostrar estadística | s: Salir: ')
 
     if respuesta_usuario == 'a':
         agregar_tarea()
@@ -115,7 +139,9 @@ while seguir_ejecutando:
         completada = input('¿Ya completaste la tarea? s/n: ')
 
         editar_fila(dato_editar, editar_titulo, editar_fecha, completada)
-
+    
+    elif respuesta_usuario=='e':
+        mostrar_estadistica()
     elif respuesta_usuario == 's':
         seguir_ejecutando = False
     else:
