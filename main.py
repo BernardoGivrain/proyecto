@@ -1,25 +1,38 @@
 from prettytable import PrettyTable
-from tarea import Tarea
 from datetime import datetime
 from openpyxl import load_workbook
 from logo import logo
 from matplotlib import pyplot as plt
+from os.path import abspath
 
-wb = load_workbook('C:/Users/Givrain/OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey/Desktop/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
+class Tarea:
+    def __init__(self, titulo, fecha_creacion, fecha_limite):
+        self.id = 1
+        self.titulo = titulo
+        self.fecha_creacion = fecha_creacion
+        self.fecha_limite = fecha_limite
+        self.completado = "❌"
+
+absoluta = abspath("proyecto\\tareas.xlsx")
+
+wb = load_workbook(absoluta)
 ws = wb.active
 tarea = Tarea(1,'', '')
-tabla_tarea = PrettyTable(['Id. de Tarea', 'Título', 'Fecha de creación', 'Fecha límite', 'Completada'])
+
+columnas = ['Id. de Tarea', 'Título', 'Fecha de creación', 'Fecha límite', 'Completada']
+tabla_tarea = PrettyTable(columnas)
     
 def actualizar_tabla():
      
-     actualizar_identificadores()
+    actualizar_identificadores()
       
-     tabla_tarea.clear_rows()
-     for data in ws.iter_rows():
-        tabla_tarea.add_row([data[0].value, data[1].value, data[2].value, data[3].value, data[4].value])
-
-
-     print(tabla_tarea)
+    tabla_tarea.clear_rows()
+    for fila in ws.iter_rows():
+        valores = []
+        for celda in fila:
+            valores.append(celda.value)
+        tabla_tarea.add_row(valores)
+    print(tabla_tarea)
 
 def actualizar_identificadores():
      identificador = 1
@@ -27,7 +40,7 @@ def actualizar_identificadores():
         for celda in fila:
             celda.value = identificador
             identificador+=1
-            wb.save('C:/Users/Givrain/OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey/Desktop/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
+            wb.save(absoluta)
 
 def ingrese_fecha_limite():
     dia_limite = int(input("Ingrese el día de la fecha límite: "))
@@ -54,7 +67,7 @@ def agregar_tarea():
     tarea.fecha_creacion = fecha_creacion
     tarea.fecha_limite = fecha_limite
     ws.append((tarea.id, tarea.titulo, tarea.fecha_creacion.strftime("%d-%m-%Y"), tarea.fecha_limite.strftime("%d-%m-%Y"), tarea.completado))
-    wb.save('C:/Users/Givrain/OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey/Desktop/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
+    wb.save(absoluta)
 
 #✅
 #❌
@@ -64,13 +77,13 @@ def eliminar_fila(id):
         for celda in fila:
             if celda.value == id:
                 ws.delete_rows(celda.row)
-                wb.save('C:/Users/Givrain/OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey/Desktop/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
+                wb.save(absoluta)
                 return True
 
 def editar_fila(id, editar_titulo, editar_fecha, completada):
     if id <= ws.max_row:
+        
         fila = ws[id]
-
         if editar_titulo == 's':
             fila[1].value = input("Ingrese el titulo de la tarea: ")
         if editar_fecha == 's':
@@ -80,7 +93,7 @@ def editar_fila(id, editar_titulo, editar_fecha, completada):
         else:
             fila[4].value = '❌'
 
-        wb.save('C:/Users/Givrain/OneDrive - Instituto Tecnologico y de Estudios Superiores de Monterrey/Desktop/Primer Semestre - tec/Pensamiento/proyecto/tareas.xlsx')
+        wb.save(absoluta)
     else:
         print("Ingrese un identificador valido.")
 
@@ -151,8 +164,3 @@ while seguir_ejecutando:
 wb.close()
 
 print('\x1b[6;30;42m' + 'Gracias por usar el programa!' + '\x1b[0m')
-
-
-
-
-
