@@ -1,5 +1,3 @@
-"""Modulo que proporciona una función para obtener"""
-from os.path import abspath
 from datetime import datetime
 from prettytable import PrettyTable
 from openpyxl import load_workbook
@@ -13,12 +11,12 @@ LOGO = '''
 ░░░██║░░░██║░░██║██████╔╝██║░╚██╗  ██║░╚═╝░██║██║░░██║██║░╚███║██║░░██║╚██████╔╝███████╗██║░░██║
 ░░░╚═╝░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝  ╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═╝░░╚═╝░╚═════╝░╚══════╝╚═╝░░╚═╝
 '''
-ABSOLUTA = abspath("proyecto-main\\tareas.xlsx")
+ARCHIVO = "tareas.xlsx"
 ETIQUETAS = ["Tareas completadas",
                 "Tareas No completadas"]
 EXP = (0.1, 0.1)
 FORMATO_DECIMALES = '%1.1f%%'
-wb = load_workbook(ABSOLUTA)
+wb = load_workbook(ARCHIVO)
 ws = wb.active
 
 COLUMNAS = ['Id. de Tarea', 'Título', 'Fecha de creación', 'Fecha límite', 'Completada']
@@ -43,7 +41,7 @@ def actualizar_identificadores():
         for celda in fila:
             celda.value = identificador
             identificador+=1
-            wb.save(ABSOLUTA)
+            wb.save(ARCHIVO)
 
 
 def ingrese_fecha_limite():
@@ -80,16 +78,16 @@ def agregar_tarea():
         fecha_limite.strftime("%d-%m-%Y"),
         "❌")
         )
-    wb.save(ABSOLUTA)
+    wb.save(ARCHIVO)
 
 
 def eliminar_fila(id_tarea):
-    """Elimina nuevas tareas en cada valor de """
+    """Elimina la tarea que se especifique en base a su identificador"""
     for fila in ws.iter_rows(min_row=1, max_col=1):
         for celda in fila:
             if celda.value == id_tarea:
                 ws.delete_rows(celda.row)
-                wb.save(ABSOLUTA)
+                wb.save(ARCHIVO)
                 return True
     return False
 
@@ -98,7 +96,7 @@ def editar_fila(id_tarea, edicion_titulo, edicion_fecha, tarea_completada):
     """Pregunta al usuario si quiere modificar cada elemento de la tarea,
      para luego solicitarle que ingrese los valores.
      """
-    if id_tarea <= ws.max_row and id_tarea > 0:
+    if 0 < id_tarea < ws.max_row:
         fila = ws[id]
         if edicion_titulo == 's':
             fila[1].value = input("Ingrese el titulo de la tarea: ")
@@ -108,7 +106,7 @@ def editar_fila(id_tarea, edicion_titulo, edicion_fecha, tarea_completada):
             fila[4].value = '✅'
         else:
             fila[4].value = '❌'
-        wb.save(ABSOLUTA)
+        wb.save(ARCHIVO)
     else:
         print("Ingrese un identificador valido.")
 
@@ -172,4 +170,3 @@ while respuesta_usuario != 's':
 wb.close()
 
 print('\x1b[6;30;42m' + 'Gracias por usar el programa!' + '\x1b[0m')
-# End-of-file
