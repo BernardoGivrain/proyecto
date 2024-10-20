@@ -13,7 +13,7 @@ LOGO = '''
 ░░░██║░░░██║░░██║██████╔╝██║░╚██╗  ██║░╚═╝░██║██║░░██║██║░╚███║██║░░██║╚██████╔╝███████╗██║░░██║
 ░░░╚═╝░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝  ╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═╝░░╚═╝░╚═════╝░╚══════╝╚═╝░░╚═╝
 '''
-ABSOLUTA = abspath("tareas.xlsx")
+ABSOLUTA = abspath("proyecto-main\\tareas.xlsx")
 ETIQUETAS = ["Tareas completadas",
                 "Tareas No completadas"]
 EXP = (0.1, 0.1)
