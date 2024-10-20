@@ -11,26 +11,29 @@ LOGO = '''
 ░░░██║░░░██║░░██║██████╔╝██║░╚██╗  ██║░╚═╝░██║██║░░██║██║░╚███║██║░░██║╚██████╔╝███████╗██║░░██║
 ░░░╚═╝░░░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝  ╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═╝░░╚═╝░╚═════╝░╚══════╝╚═╝░░╚═╝
 '''
-ARCHIVO = "tareas.xlsx"
+ARCHIVO = "tarea.xlsx"
 ETIQUETAS = ["Tareas completadas",
                 "Tareas No completadas"]
 EXP = (0.1, 0.1)
 FORMATO_DECIMALES = '%1.1f%%'
 wb = load_workbook(ARCHIVO)
 ws = wb.active
-
 COLUMNAS = ['Id. de Tarea', 'Título', 'Fecha de creación', 'Fecha límite', 'Completada']
 tabla_tarea = PrettyTable(COLUMNAS)
 
 def actualizar_tabla():
     """Función que refresca la tabla y actualiza los identificadores de las tareas ingresadas"""
-    actualizar_identificadores()
-    tabla_tarea.clear_rows()
-    for fila in ws.iter_rows():
-        valores = []
-        for celda in fila:
-            valores.append(celda.value)
-        tabla_tarea.add_row(valores)
+    if ws[1][0].value is not None:
+        actualizar_identificadores()
+        tabla_tarea.clear_rows()
+        for fila in ws.iter_rows():
+            valores = []
+            for celda in fila:
+                valores.append(celda.value)
+            tabla_tarea.add_row(valores)
+    else:
+        ws.delete_rows(1,1)
+        tabla_tarea.clear_rows()
     print(tabla_tarea)
 
 
@@ -72,7 +75,7 @@ def agregar_tarea():
     diferencia_dias(fecha_limite, fecha_creacion)
     titulo = input('Inserte el titulo de la tarea: ')
     ws.append(
-        (0, 
+        (1, 
         titulo,
         fecha_creacion.strftime("%d-%m-%Y"),
         fecha_limite.strftime("%d-%m-%Y"),
@@ -86,7 +89,7 @@ def eliminar_fila(id_tarea):
     for fila in ws.iter_rows(min_row=1, max_col=1):
         for celda in fila:
             if celda.value == id_tarea:
-                ws.delete_rows(celda.row)
+                ws.delete_rows(celda.row, 1)
                 wb.save(ARCHIVO)
                 return True
     return False
@@ -97,15 +100,13 @@ def editar_fila(id_tarea, edicion_titulo, edicion_fecha, tarea_completada):
      para luego solicitarle que ingrese los valores.
      """
     if 0 < id_tarea < ws.max_row:
-        fila = ws[id]
+        fila = ws[id_tarea]
         if edicion_titulo == 's':
             fila[1].value = input("Ingrese el titulo de la tarea: ")
         if edicion_fecha == 's':
             fila[3].value = ingrese_fecha_limite().strftime("%d-%m-%Y")
         if tarea_completada == 's':
             fila[4].value = '✅'
-        else:
-            fila[4].value = '❌'
         wb.save(ARCHIVO)
     else:
         print("Ingrese un identificador valido.")
@@ -132,6 +133,7 @@ def mostrar_estadistica():
     plt.show()
 
 print(LOGO)
+
 actualizar_tabla()
 print('')
 
@@ -160,12 +162,10 @@ while respuesta_usuario != 's':
     elif respuesta_usuario=='e':
         mostrar_estadistica()
     else:
-        print("Seleccione una opción válida.")
-
+        print("Seleccione una opción válida.")   
     actualizar_tabla()
     respuesta_usuario = input('¿Qué desea hacer? a: Agregar tarea | b: Eliminar | \
-    c: Editar | e: Mostrar estadística | s: Salir: ')
-
+c: Editar | e: Mostrar estadística | s: Salir: ')
 
 wb.close()
 
